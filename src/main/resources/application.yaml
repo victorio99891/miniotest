@@ -1,0 +1,9 @@
+server:
+  port: 8080
+  error:
+    include-message: always
+
+minio:
+  url: ${MINIO_URL}
+  username: ${MINIO_USER}
+  password: ${MINIO_PASSWORD}
