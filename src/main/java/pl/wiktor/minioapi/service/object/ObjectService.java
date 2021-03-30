@@ -11,10 +11,10 @@ import pl.wiktor.minioapi.model.ObjectDTO;
 import pl.wiktor.minioapi.service.errors.MinioClientException;
 
 import java.io.BufferedWriter;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,21 +28,30 @@ public class ObjectService {
 
     public List<ObjectDTO> listObjects(String bucketName) {
         Iterable<Result<Item>> results = mcs.client()
-                .listObjects(ListObjectsArgs.builder()
-                        .bucket(bucketName)
-                        .recursive(true)
-                        .build());
+                .listObjects(
+                        ListObjectsArgs.builder()
+                                .bucket(bucketName)
+                                .includeUserMetadata(true)
+                                .recursive(true)
+                                .build()
+                );
 
         Iterator<Result<Item>> iterator = results.iterator();
 
         return Lists.newArrayList(iterator).stream().map(itemResult -> {
             try {
                 Item item = itemResult.get();
-                return new ObjectDTO(item.objectName(), item.lastModified(), item.userMetadata(), item.size(), item.owner());
+                return new ObjectDTO(item.objectName(), item.lastModified(), fetchContentType(item.userMetadata()), item.userMetadata(), item.size());
             } catch (Exception e) {
                 throw new MinioClientException(e);
             }
         }).collect(Collectors.toList());
+    }
+
+    private String fetchContentType(Map<String, String> userMetadata) {
+        String key = "content-type";
+        String value = userMetadata.get(key);
+        return value;
     }
 
     public String createObject(String bucketName, String path, String content) {

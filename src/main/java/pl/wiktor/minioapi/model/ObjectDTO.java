@@ -1,6 +1,5 @@
 package pl.wiktor.minioapi.model;
 
-import io.minio.messages.Owner;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,17 +15,17 @@ public class ObjectDTO {
 
     private ZonedDateTime lastModified;
 
+    private String contentType;
+
     private Map<String, String> metadata;
 
     private long size;
 
-    private Owner owner;
-
-    public ObjectDTO(String objectName, ZonedDateTime lastModified, Map<String, String> metadata, long size, Owner owner) {
+    public ObjectDTO(String objectName, ZonedDateTime lastModified, String contentType, Map<String, String> metadata, long size) {
         this.objectName = objectName;
         this.lastModified = lastModified;
+        this.contentType = contentType;
         this.metadata = metadata;
         this.size = size;
-        this.owner = owner;
     }
 }
