@@ -2,10 +2,11 @@ plugins {
     id 'org.springframework.boot' version '2.4.4'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+    id 'com.palantir.docker' version '0.26.0'
 }
 
 group = 'pl.wiktor'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 sourceCompatibility = '11'
 
 configurations {
@@ -28,6 +29,20 @@ dependencies {
 
 }
 
+bootJar {
+    archiveFileName = "minioapi.jar"
+}
+
 test {
     useJUnitPlatform()
 }
+
+docker {
+    name "${project.name}:latest"
+    files bootJar.archivePath
+    tag '_MicroK8sRegistry', "localhost:32000/${project.name}:latest"
+    dockerfile file("${projectDir}/container/Dockerfile")
+}
+
+
+

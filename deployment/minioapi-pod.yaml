@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio-api-deployment
+  labels:
+    app: minio-api
+spec:
+  selector:
+    matchLabels:
+      app: minio-api
+  replicas: 1
+  minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: minio-api
+    spec:
+      terminationGracePeriodSeconds: 1
+      containers:
+        - name: minio-api
+          image: localhost:32000/minio-api:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: MINIO_URL
+              value: "http://192.168.128.128:9080"
+            - name: MINIO_USER
+              value: "minio"
+            - name: MINIO_PASSWORD
+              value: "Armagedon#14"
